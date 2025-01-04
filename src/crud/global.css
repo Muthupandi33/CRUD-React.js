@@ -1,0 +1,28 @@
+th,td{
+    text-align: center;
+    border: 1px solid black;
+    padding: 10px;
+}
+.data1, .data2{
+    text-decoration: none;
+    padding: 10px;
+    margin: 0px 5px;
+   
+}
+.data1{
+    background-color: orange;
+    padding: 2px;
+   
+}
+.data2{
+    background-color: red;
+    padding: 2px;
+}
+
+img{
+    width: 65px;
+    height: 30px;
+    display: flex;
+    align-items: end;
+    padding-left: 85%;
+}
