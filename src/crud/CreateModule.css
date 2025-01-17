@@ -6,7 +6,7 @@
 .formBlock{
     width: 100%;
     height: 100vh;
-    background-color: rgb(32, 19, 19);
+    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,10 +16,12 @@
 .formBlock > div{
     width: 230px;
     height: 50px;
-    background-color: #feb47b;
+    /* background-color: #e3ac83; */
 
 }
 .formBlock > div > input{
     width: 100%;
     height: 30px;
+    /* background-color: rgb(105, 25, 203); */
+    color: green;
 }

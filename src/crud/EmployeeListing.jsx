@@ -1,88 +1,128 @@
-import React, { useEffect, useState } from 'react'
-// import obj from './users.json'
-import './global.css'
-import { Link, useNavigate } from 'react-router-dom'
-// import MainAppFile from './MainAppFile'
-
+import React, { useEffect, useState } from "react";
+import "./global.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const EmployeeListing = () => {
+  let navigate = useNavigate();
 
+  const [Users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    let navigate=useNavigate();
-
-    const[Users,setUsers] = useState([])
-
-    useEffect(() => {
-        fetch("http://localhost:3000/user")
-          .then(res => res.json()) // First, parse the response as JSON
-          .then(data => {
-
-        //    console.log(data);
-           
-            setUsers(data);
-            
-          })
-          .catch(err => console.log(err)); // Catch and log any errors
-      }, []);
-
-      // delete User
-  const removeUser = (id)=>{
-    fetch("http://localhost:3000/user/"+id,{
-         method:"DELETE"
-    }).then(res=> console.log("DATA DELETED SUCCESSFULLY"))
-    .catch(err => console.log("SOME ERROR WHILE DELETING USER")
-    )
+  const fetchUsers = () => {
+    fetch("https://678a4dcbdd587da7ac299255.mockapi.io/api/users/user")
+      .then((response) => response.json())
+      .then((data) => {
+        setIsLoading(false);
+        if (data && Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          console.error("Unexpected data format:", data);
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setError("Error fetching users: " + error.message);
+        console.error("Error fetching users:", error);
+      });
   };
-  // FOR EDITING
+
+  const removeUser = (id) => {
+    if (window.confirm(`Are you sure you want to delete the user with ID: ${id}?`)) {
+      // Send DELETE request to the API
+      fetch(`https://678a4dcbdd587da7ac299255.mockapi.io/api/users/user/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Remove the user from local state if deletion was successful
+            setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+            console.log(`User with id ${id} removed from API and local state`);
+          } else {
+            throw new Error("Failed to delete user");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting user:", error);
+          alert("There was an error deleting the user.");
+        });
+    }
+  };
+
   const loadEdit = (id) => {
-    console.log("Navigating to edit with id:", id); // Add this line
     navigate("/edit/" + id);
   };
-  
+
   return (
     <div>
-        <div>
+      <div>
         <Link to="/create" className="data1">
           ADD USER
         </Link>
+      </div>
+      <h1 style={{ textAlign: "center" }}>Employee List</h1>
+      {error ? (
+        <p style={{ textAlign: "center", color: "red" }}>{error}</p>
+      ) : isLoading ? (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div className="spinner"></div>
+          <p>Loading...</p>
         </div>
-       
-        <h1 style={{textAlign:'center'}} >Employee List </h1>
-         
-        <table border="2" style={{width:"90%", border:"2px solid blue", backgroundColor:"bisque"}} >
-            <thead>
-                <tr>
-                    <th>S.NO</th>
-                    <th>NAME</th>
-                    <th>EMAIL</th>
-                    <th>PHONE</th>
-                    <th>ACTIONS</th>
+      ) : (
+        <table
+          border="2"
+          style={{
+            width: "90%",
+            border: "2px solid blue",
+            backgroundColor: "bisque",
+          }}
+        >
+          <thead>
+            <tr>
+              <th>S.NO</th>
+              <th>NAME</th>
+              <th>EMAIL</th>
+              <th>PHONE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Users.length > 0 ? (
+              Users.map((user) => (
+                <tr key={user.id}>
+                  <td className="details">{user.id}</td>
+                  <td className="details">{user.name}</td>
+                  <td className="details">{user.email}</td>
+                  <td className="details">{user.phone}</td>
+                  <td>
+                    <button className="data1" onClick={() => loadEdit(user.id)}>
+                      Edit
+                    </button>
+                    <button
+                      className="data2"
+                      onClick={() => removeUser(user.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-            </thead>
-            <tbody>
-            
-                    {Users.map(user => (
-                        <tr key={user.id}  >
-                            <td className='details' >{user.id}</td>
-                            <td className='details' >{user.name}</td>
-                            <td className='details' >{user.email}</td>
-                            <td className='details' >{user.phone}</td>
-                            <td>
-                            <Link className='data1' to={`/edit/${user.id}`} onClick={()=> loadEdit(user.id)} >Edit</Link>
-                            <Link className='data2' onClick={()=> removeUser(user.id)} >Delete</Link>
-                            </td>
-                        </tr>
-                    ))}
- 
-        </tbody>
-        
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  No users found
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
-
-
-
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default EmployeeListing
+export default EmployeeListing;
