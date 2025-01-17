@@ -1,9 +1,7 @@
-import {createRoot} from 'react-dom/client'
-import MainAppFile from './crud/MainAppFile'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import MainAppFile from './crud/MainAppFile';
 
-
-
-
-
-
-createRoot(document.getElementById("root")).render(<MainAppFile/>)
+// Create root and render MainAppFile without routing
+const root = createRoot(document.getElementById('root'));
+root.render(<MainAppFile />);
